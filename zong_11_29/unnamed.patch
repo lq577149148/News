@@ -1,0 +1,526 @@
+Index: zong/spiders/wurenjiw.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- zong/spiders/wurenjiw.py	(date 1543475129213)
++++ zong/spiders/wurenjiw.py	(date 1543475129213)
+@@ -0,0 +1,94 @@
++# -*- coding: utf-8 -*-
++import scrapy,re,rules
++import win_unicode_console
++win_unicode_console.enable()
++from scrapy.selector import Selector
++from scrapy.spiders import Rule,CrawlSpider
++from scrapy.linkextractors import LinkExtractor
++# from ..items import WurenjiItem
++
++class WurenjiwSpider(CrawlSpider):
++    name = 'wurenjiw'
++    # allowed_domains = ['http://www.81uav.cn/uav-news/4.html']
++    start_urls = ['http://www.81uav.cn/uav-news/4.html']
++    rules = (
++                Rule(LinkExtractor(allow='http://www.81uav.cn/uav-news/4_\d+.html'),follow=True),
++                Rule(LinkExtractor(allow='http://www.81uav.cn/uav-news/\d{6}/\d{2}/\d+.html',restrict_css="div.news_left a"),callback='parse_item',follow=False),
++             )
++    # def start_requests(self):
++    #     for i in range(1,10):
++    #         url = 'http://www.81uav.cn/product/zhibaowurenji/0-0-0-'+str(i)+'-0.html'
++    #         yield scrapy.Request(url=url,callback=self.parse)
++
++    def parse_item(self, response):
++        # item = WurenjiItem()
++        print(response.url)
++        sel = Selector(response)
++        #详情页文章标题
++        if sel.xpath('//h1/text()').extract_first():
++            title = ''.join(sel.xpath('//h1/text()').extract_first())
++            # print(type(title),'===')
++            # print(title)
++        else:
++            title = "没有"
++            print(title,response.url)
++        # 详情页文章内容
++        if sel.css("div.info::text").re("\d{4}-\d{2}-\d{2}")[0]:
++            data_time = ''.join(sel.css("div.info::text").re("\d{4}-\d{2}-\d{2}"))
++            # print(type(data_time),'****')
++            print(data_time)
++
++        else:
++            data_time = "没有"
++            print(data_time, response.url)
++        # 详情页内容
++        if sel.xpath("//div[@id='content']/div[@id='article']/p/text()").extract():
++            neirong = ';'.join(sel.xpath("//div[@id='content']/div[@id='article']/p/text()").extract())
++            # print(type(neirong),'-----')
++            # print(neirong)
++        else:
++            neirong = "没有"
++            print(neirong,response.url)
++        # 详情页的图片url
++        if sel.xpath("//div[@id='content']/div[@id='article']/p/img/@src").extract():
++            img_url = ';'.join(sel.xpath("//div[@id='content']/div[@id='article']/p/img/@src").extract())
++            # print(type(img_url),'+++')
++            # print(img_url)
++        else:
++            img_url = "没有"
++            print(img_url,response.url)
++        # item['title'] = title
++        # item['data_time'] = data_time
++        # item['neirong'] = neirong
++        # item['img_url'] = img_url
++        # return item
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++        # print(self.rules,'=============================')
++        # name = response.xpath("//div[@class='qc-body']/dl/ul/li/p/a/text()").extract()
++        # print(name)
++        # title = re.findall('<title>(.*?)</title>', response.text)
++        # print(title)
++        # link = response.xpath("//div/dl/ul/li/p/a/@href").extract()
++        # for i in link:
++        #     urls = i
++        #     yield scrapy.Request(url=urls,callback=self.parse1)
++
++    # def parse1(self ,response):
++    #     title = re.findall('<title>(.*?)</title>',response.text)
++    #     price = re.findall('<font>(.*?)</font>',response.text)
++    #     print(title)
++    #     print(price)
+Index: zong/items.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- zong/items.py	(date 1543475341502)
++++ zong/items.py	(date 1543475341502)
+@@ -0,0 +1,26 @@
++# -*- coding: utf-8 -*-
++
++# Define here the models for your scraped items
++#
++# See documentation in:
++# https://doc.scrapy.org/en/latest/topics/items.html
++
++import scrapy
++
++
++class ZongItem(scrapy.Item):
++    # define the fields for your item here like:
++    # name = scrapy.Field()
++    pass
++class WurenjiItem(scrapy.Item):
++    # define the fields for your item here like:
++    # title = scrapy.Field()
++    # data_time = scrapy.Field()
++    # neirong = scrapy.Field()
++    # img_url = scrapy.Field()
++    pass
++
++class WnagyiItem(scrapy.Item):
++    # define the fields for your item here like:
++    # name = scrapy.Field()
++    pass
+Index: zong/__init__.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- zong/__init__.py	(date 1533105549966)
++++ zong/__init__.py	(date 1533105549966)
+@@ -0,0 +1,0 @@
+Index: zong/spiders/dayihuw.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- zong/spiders/dayihuw.py	(date 1543474888547)
++++ zong/spiders/dayihuw.py	(date 1543474888547)
+@@ -0,0 +1,67 @@
++# -*- coding: utf-8 -*-
++import scrapy
++import win_unicode_console
++win_unicode_console.enable()
++from scrapy.selector import Selector
++from scrapy.spiders import Rule,CrawlSpider
++from scrapy.linkextractors import LinkExtractor
++
++
++class DayinhuwSpider(CrawlSpider):
++    name = 'dayinhuw'
++    # allowed_domains = ['http://www.dayinhu.com/news/category/']
++    start_urls = ['http://www.dayinhu.com/news/category/%E7%A7%91%E6%8A%80%E5%89%8D%E6%B2%BF/page/1']
++    rules = (
++            Rule(LinkExtractor(allow='http://www.dayinhu.com/news/category/%E7%A7%91%E6%8A%80%E5%89%8D%E6%B2%BF/page/1'),follow=True),
++            Rule(LinkExtractor(allow='http://www.dayinhu.com/news/\d{6}.html',restrict_css='h1.entry-titl e a'),follow=False,callback='parse_item'),
++
++
++    )
++
++
++    def parse_item(self, response):
++        sel = Selector(response)
++        try:
++            if sel.xpath("//header[@class='entry-header']/h1[@class='entry-title']/text()").extract_first():
++                title = sel.xpath("//header[@class='entry-header']/h1[@class='entry-title']/text()").extract_first()
++                print(title)
++            else:
++                raise Exception("没有标题")
++
++            if sel.xpath("//footer[@class='entry-meta']/a[1]/time[@class='entry-date']/text()").extract_first():
++                data_time = sel.xpath("//footer[@class='entry-meta']/a[1]/time[@class='entry-date']/text()").extract_first()
++                print(data_time)
++            else:
++                raise Exception("没有时间")
++
++            if sel.xpath("//div[@class='entry-content']/p/text()").extract():
++                neirong = sel.xpath("//div[@class='entry-content']/p/text()").extract()
++                print(neirong)
++            else:
++                neirong = "没有内容"
++                print(neirong)
++
++            if sel.xpath("//div[@class='entry-content']/p[1]/text()").extract():
++                daodu = sel.xpath("//div[@class='entry-content']/p[1]/text()").extract()
++                print(daodu)
++            else:
++                daodu = "没有导读"
++                print(daodu)
++
++            if sel.xpath("//p/img[@class='aligncenter size-full wp-image-1142']/@src").extract():
++                img_url = sel.xpath("//p/img[@class='aligncenter size-full wp-image-1142']/@src").extract()
++                print(img_url)
++            else:
++                img_url = "没有图片"
++                print(img_url)
++
++            if sel.xpath('//head/meta[@name="keywords"]/@content').extract_first():
++                biaoqian = sel.xpath('//head/meta[@name="keywords"]/@content').extract_first()
++                print(biaoqian)
++            else:
++                biaoqian = "没有标签"
++                print(biaoqian)
++        except:
++            pass
++
++        # print(response.url,'===========')
+Index: zong/middlewares.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- zong/middlewares.py	(date 1543474718597)
++++ zong/middlewares.py	(date 1543474718597)
+@@ -0,0 +1,103 @@
++# -*- coding: utf-8 -*-
++
++# Define here the models for your spider middleware
++#
++# See documentation in:
++# https://doc.scrapy.org/en/latest/topics/spider-middleware.html
++
++from scrapy import signals
++
++
++class ZongSpiderMiddleware(object):
++    # Not all methods need to be defined. If a method is not defined,
++    # scrapy acts as if the spider middleware does not modify the
++    # passed objects.
++
++    @classmethod
++    def from_crawler(cls, crawler):
++        # This method is used by Scrapy to create your spiders.
++        s = cls()
++        crawler.signals.connect(s.spider_opened, signal=signals.spider_opened)
++        return s
++
++    def process_spider_input(self, response, spider):
++        # Called for each response that goes through the spider
++        # middleware and into the spider.
++
++        # Should return None or raise an exception.
++        return None
++
++    def process_spider_output(self, response, result, spider):
++        # Called with the results returned from the Spider, after
++        # it has processed the response.
++
++        # Must return an iterable of Request, dict or Item objects.
++        for i in result:
++            yield i
++
++    def process_spider_exception(self, response, exception, spider):
++        # Called when a spider or process_spider_input() method
++        # (from other spider middleware) raises an exception.
++
++        # Should return either None or an iterable of Response, dict
++        # or Item objects.
++        pass
++
++    def process_start_requests(self, start_requests, spider):
++        # Called with the start requests of the spider, and works
++        # similarly to the process_spider_output() method, except
++        # that it doesn’t have a response associated.
++
++        # Must return only requests (not items).
++        for r in start_requests:
++            yield r
++
++    def spider_opened(self, spider):
++        spider.logger.info('Spider opened: %s' % spider.name)
++
++
++class ZongDownloaderMiddleware(object):
++    # Not all methods need to be defined. If a method is not defined,
++    # scrapy acts as if the downloader middleware does not modify the
++    # passed objects.
++
++    @classmethod
++    def from_crawler(cls, crawler):
++        # This method is used by Scrapy to create your spiders.
++        s = cls()
++        crawler.signals.connect(s.spider_opened, signal=signals.spider_opened)
++        return s
++
++    def process_request(self, request, spider):
++        # Called for each request that goes through the downloader
++        # middleware.
++
++        # Must either:
++        # - return None: continue processing this request
++        # - or return a Response object
++        # - or return a Request object
++        # - or raise IgnoreRequest: process_exception() methods of
++        #   installed downloader middleware will be called
++        return None
++
++    def process_response(self, request, response, spider):
++        # Called with the response returned from the downloader.
++
++        # Must either;
++        # - return a Response object
++        # - return a Request object
++        # - or raise IgnoreRequest
++        return response
++
++    def process_exception(self, request, exception, spider):
++        # Called when a download handler or a process_request()
++        # (from other downloader middleware) raises an exception.
++
++        # Must either:
++        # - return None: continue processing this exception
++        # - return a Response object: stops process_exception() chain
++        # - return a Request object: stops process_exception() chain
++        pass
++
++    def spider_opened(self, spider):
++        spider.logger.info('Spider opened: %s' % spider.name)
+Index: zong/spiders/yangyiw.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- zong/spiders/yangyiw.py	(date 1543475419808)
++++ zong/spiders/yangyiw.py	(date 1543475419808)
+@@ -0,0 +1,59 @@
++# -*- coding: utf-8 -*-
++import scrapy,re
++from scrapy.selector import Selector
++from scrapy.spiders import Rule,CrawlSpider
++from scrapy.linkextractors import LinkExtractor
++import win_unicode_console
++win_unicode_console.enable()
++
++
++class YangyiwSpider(scrapy.Spider):
++    name = 'yangyiw'
++    # allowed_domains = ['https://news.163.com/']
++    # start_urls = ['http://temp.163.com/special/00804KVA/cm_guonei_03.js?callback=data_callback']
++    #https://news.163.com/18/1126/19/E1IHK36M0001875N.html"
++    #https://news.163.com/18/1126/19/E1IHG4NT0001875N.html"
++    # rules = (
++    #         Rule(LinkExtractor(allow=("http://temp.163.com/special/00804KVA/cm_guonei_03.js?callback=data_callback")),follow=True,callback='parse_item'),
++    #         Rule(LinkExtractor(allow=("https://tech.163.com/\d{2}/\d{4}/\d{2}/\w{1}\d{1}\w{1}\d{2}\w{2}\d{6}\w{1}\d{2}.html")),follow=False)
++    #
++    # )
++
++    def start_requests(self):
++        url = "http://temp.163.com/special/00804KVA/cm_guonei_03.js?callback=data_callback"
++        yield scrapy.Request(url=url,callback=self.parse)
++
++    def parse(self, response):
++        link = re.findall('"docurl":"(.*?)"',response.text)
++        for i in link:
++            url = i
++            print(i)
++            yield scrapy.Request(url=url,callback=self.parse1)
++
++    def parse1(self, response):
++        #标题
++        title = re.findall('<title>(.*?)</title>',response.text)
++        print(title)
++        #内容
++        neirong = response.xpath("//div[@class='post_body']/div[@id='endText']/p/text()").extract()
++        print(neirong)
++        #时间
++        data_time = response.xpath("//div[@id='epContentLeft']/div[@class='post_time_source']/text()").extract()
++        print("时间",data_time)
++        #来源
++        laiyuan = response.xpath("//div[@class='post_time_source']/a[@id='ne_article_source']/text()").extract()
++        print("来源：",laiyuan)
++        #作者
++        author = response.xpath("//div[@class='ep-source cDGray']/span[@class='ep-editor']/text()").extract()
++        print("作者",author)
++        #图片链接
++        img_url = response.xpath("//div[@id='endText']/p[@class='f_center']/img/@src").extract()
++        print("图片链接：",img_url)
++        #关键字
++        keyword = response.xpath('//meta[@name="keywords"]/@content').extract()
++        print("关键字：",keyword)
++        #导读
++        # daodu = response.xpath('//meta[@name="description"/@content]').extract()
++        # print("导读",daodu)
++
++
+Index: zong/pipelines.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- zong/pipelines.py	(date 1543474718596)
++++ zong/pipelines.py	(date 1543474718596)
+@@ -0,0 +1,11 @@
++# -*- coding: utf-8 -*-
++
++# Define your item pipelines here
++#
++# Don't forget to add your pipeline to the ITEM_PIPELINES setting
++# See: https://doc.scrapy.org/en/latest/topics/item-pipeline.html
++
++
++class ZongPipeline(object):
++    def process_item(self, item, spider):
++        return item
+Index: zong/spiders/__init__.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- zong/spiders/__init__.py	(date 1533105549975)
++++ zong/spiders/__init__.py	(date 1533105549975)
+@@ -0,0 +1,4 @@
++# This package will contain the spiders of your Scrapy project
++#
++# Please refer to the documentation for information on how to create and manage
++# your spiders.
+Index: zong/settings.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- zong/settings.py	(date 1543474718593)
++++ zong/settings.py	(date 1543474718593)
+@@ -0,0 +1,90 @@
++# -*- coding: utf-8 -*-
++
++# Scrapy settings for zong project
++#
++# For simplicity, this file contains only settings considered important or
++# commonly used. You can find more settings consulting the documentation:
++#
++#     https://doc.scrapy.org/en/latest/topics/settings.html
++#     https://doc.scrapy.org/en/latest/topics/downloader-middleware.html
++#     https://doc.scrapy.org/en/latest/topics/spider-middleware.html
++
++BOT_NAME = 'zong'
++
++SPIDER_MODULES = ['zong.spiders']
++NEWSPIDER_MODULE = 'zong.spiders'
++
++
++# Crawl responsibly by identifying yourself (and your website) on the user-agent
++#USER_AGENT = 'zong (+http://www.yourdomain.com)'
++
++# Obey robots.txt rules
++ROBOTSTXT_OBEY = True
++
++# Configure maximum concurrent requests performed by Scrapy (default: 16)
++#CONCURRENT_REQUESTS = 32
++
++# Configure a delay for requests for the same website (default: 0)
++# See https://doc.scrapy.org/en/latest/topics/settings.html#download-delay
++# See also autothrottle settings and docs
++#DOWNLOAD_DELAY = 3
++# The download delay setting will honor only one of:
++#CONCURRENT_REQUESTS_PER_DOMAIN = 16
++#CONCURRENT_REQUESTS_PER_IP = 16
++
++# Disable cookies (enabled by default)
++#COOKIES_ENABLED = False
++
++# Disable Telnet Console (enabled by default)
++#TELNETCONSOLE_ENABLED = False
++
++# Override the default request headers:
++#DEFAULT_REQUEST_HEADERS = {
++#   'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
++#   'Accept-Language': 'en',
++#}
++
++# Enable or disable spider middlewares
++# See https://doc.scrapy.org/en/latest/topics/spider-middleware.html
++#SPIDER_MIDDLEWARES = {
++#    'zong.middlewares.ZongSpiderMiddleware': 543,
++#}
++
++# Enable or disable downloader middlewares
++# See https://doc.scrapy.org/en/latest/topics/downloader-middleware.html
++#DOWNLOADER_MIDDLEWARES = {
++#    'zong.middlewares.ZongDownloaderMiddleware': 543,
++#}
++
++# Enable or disable extensions
++# See https://doc.scrapy.org/en/latest/topics/extensions.html
++#EXTENSIONS = {
++#    'scrapy.extensions.telnet.TelnetConsole': None,
++#}
++
++# Configure item pipelines
++# See https://doc.scrapy.org/en/latest/topics/item-pipeline.html
++#ITEM_PIPELINES = {
++#    'zong.pipelines.ZongPipeline': 300,
++#}
++
++# Enable and configure the AutoThrottle extension (disabled by default)
++# See https://doc.scrapy.org/en/latest/topics/autothrottle.html
++#AUTOTHROTTLE_ENABLED = True
++# The initial download delay
++#AUTOTHROTTLE_START_DELAY = 5
++# The maximum download delay to be set in case of high latencies
++#AUTOTHROTTLE_MAX_DELAY = 60
++# The average number of requests Scrapy should be sending in parallel to
++# each remote server
++#AUTOTHROTTLE_TARGET_CONCURRENCY = 1.0
++# Enable showing throttling stats for every response received:
++#AUTOTHROTTLE_DEBUG = False
++
++# Enable and configure HTTP caching (disabled by default)
++# See https://doc.scrapy.org/en/latest/topics/downloader-middleware.html#httpcache-middleware-settings
++#HTTPCACHE_ENABLED = True
++#HTTPCACHE_EXPIRATION_SECS = 0
++#HTTPCACHE_DIR = 'httpcache'
++#HTTPCACHE_IGNORE_HTTP_CODES = []
++#HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
